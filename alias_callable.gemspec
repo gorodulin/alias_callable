@@ -12,12 +12,12 @@ Gem::Specification.new do |spec|
   spec.homepage     = "https://github.com/gorodulin/alias_callable"
   spec.license      = "MIT"
 
-  spec.required_ruby_version = Gem::Requirement.new(">= 2.3")
+  spec.required_ruby_version = Gem::Requirement.new(">= 3.0")
 
   spec.metadata = {
     "changelog_uri"   => "https://github.com/gorodulin/alias_callable/blob/main/CHANGELOG.md",
     "homepage_uri"    => spec.homepage,
-    "source_code_uri" => "https://github.com/gorodulin/alias_callable",
+    "source_code_uri" => "https://github.com/gorodulin/alias_callable/tree/main",
   }
 
   spec.files = Dir["lib/**/*.{rb,erb}"] + %w[LICENSE README.md CHANGELOG.md]
