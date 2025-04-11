@@ -21,7 +21,21 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-          bundler-cache: true
+          bundler: none  # Don't install bundler yet
+
+      - name: Install compatible bundler
+        shell: bash
+        run: |
+          if [[ "${{ matrix.ruby }}" < "3.0" ]]; then
+            gem install bundler -v '~> 2.4.22'  # Install the last 2.x version compatible with Ruby < 3.0
+          else
+            gem install bundler -v '~> 2.5.20'  # Use your current version for Ruby 3.0+
+          fi
+
+      - name: Setup bundle
+        run: |
+          bundle config path vendor/bundle
+          bundle install --jobs 4 --retry 3
 
       - name: Run specs
         run: bundle exec rspec
