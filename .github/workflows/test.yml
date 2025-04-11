@@ -39,7 +39,7 @@ jobs:
       - name: Setup bundle
         run: |
           bundle config path vendor/bundle
-          bundle install --jobs 4 --retry 3
+          bundle install --jobs 4 --retry 3 --with test --without development
 
       - name: Run specs
         run: bundle exec rspec
