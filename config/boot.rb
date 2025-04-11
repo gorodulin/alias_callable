@@ -14,12 +14,3 @@ require "pry" if Gem::Specification.find_all_by_name("pry").any?
 
 require "alias_callable"
 AliasCallable.enable_globally
-
-class Exception
-  alias_method :original_backtrace, :backtrace
-
-  def backtrace
-    bt = original_backtrace
-    bt&.grep_v(%r{/alias_callable/})
-  end
-end
