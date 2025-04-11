@@ -46,7 +46,14 @@ module AliasCallable
     end
 
     def aliased_callable(alias_name)
-      target = self.singleton_class? ? self.attached_object : self.allocate
+      get_attached_object = ->(sc) do
+        if sc.respond_to?(:attached_object)
+          sc.attached_object
+        else
+          ::ObjectSpace.each_object(Object).find { |o| o.is_a?(Module) && o.singleton_class == sc }
+        end
+      end
+      target = self.singleton_class? ? get_attached_object.call(self) : self.allocate
       helper_name = :"_callable__#{alias_name}"
       unless target.private_methods.include?(helper_name)
         raise ::AliasCallable::UnknownCallableError, "No callable registered as `#{alias_name}` in #{self}."
