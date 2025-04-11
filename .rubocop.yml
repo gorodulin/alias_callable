@@ -2,7 +2,7 @@
 
 AllCops:
   SuggestExtensions: false
-  TargetRubyVersion: "2.3"
+  TargetRubyVersion: "2.5"
   Exclude:
   - spec/acceptance/12_argument_passthrough/ruby_3.1_and_above/12_story.rb
 Security/Eval:
