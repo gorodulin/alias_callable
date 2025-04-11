@@ -49,7 +49,7 @@ module AliasCallable
       get_attached_object = ->(sc) do
         if sc.respond_to?(:attached_object)
           sc.attached_object
-        else
+        else # Ruby 3.2 and earlier support. Slow, but better than nothing
           ::ObjectSpace.each_object(Object).find { |o| o.is_a?(Module) && o.singleton_class == sc }
         end
       end
