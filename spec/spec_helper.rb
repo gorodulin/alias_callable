@@ -7,7 +7,7 @@ if Gem::Specification.find_all_by_name("simplecov").any? && !ENV["GITHUB_ACTIONS
   SimpleCov.start
 end
 
-Dir[File.join(__dir__, *%w[support ** *.rb])].each { require _1 }
+Dir[File.join(__dir__, *%w[support ** *.rb])].each { |file| require file }
 
 # Require shared examples
 Dir[File.join(__dir__, "support/shared_examples/**/*.rb")].sort.each { |file| require file }
