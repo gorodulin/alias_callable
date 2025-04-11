@@ -2,7 +2,7 @@
 
 require File.join(__dir__, *%w[.. config boot.rb])
 
-if Gem::Specification.find_all_by_name("simplecov").any?
+if Gem::Specification.find_all_by_name("simplecov").any? && !ENV["GITHUB_ACTIONS"]
   require "simplecov"
   SimpleCov.start
 end
