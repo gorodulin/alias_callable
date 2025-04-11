@@ -2,4 +2,4 @@ coverage
 .DS_Store
 .ruby-gemset
 .ruby-version
-
+.rspec_status
