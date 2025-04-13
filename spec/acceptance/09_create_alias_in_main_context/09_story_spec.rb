@@ -11,8 +11,8 @@ RSpec.describe "Story09" do
         expect do
           load File.join(__dir__, "09_story.rb")
         end.to raise_error(NoMethodError, /undefined method 'alias_callable' for main/)
-        expect(eval("respond_to?(:do_something, true)", TOPLEVEL_BINDING, __FILE__, __LINE__), __FILE__,
-               __LINE__).to be false
+        result = eval("respond_to?(:do_something, true)", TOPLEVEL_BINDING) # rubocop:disable Style/EvalWithLocation
+        expect(result).to be false
       end
     end
   end
