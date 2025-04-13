@@ -10,9 +10,6 @@
     - It should be possible to stub them in both classes separately (without affecting each other).
 - When different callables are included under the same name from different modules.
   - The latter one should be used.
-- When alias_callable method is called outside of a class/module (e.g. in the console or in main).
-  - It should be possible to call it and stub it.
-  - Should it be available in procs and lambdas?
 - When class.call passes args using old Ruby notation
   - We should collect the args from the target method and be able to autofill them
 - When class.call passes args using new Ruby notation
