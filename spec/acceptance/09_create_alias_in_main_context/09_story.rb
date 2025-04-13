@@ -8,4 +8,4 @@ module Story09
   end
 end
 
-alias_callable :do_something, Story09::DoSomething
+alias_callable :do_something, Story09::DoSomething # should raise error in main context
