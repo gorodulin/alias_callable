@@ -46,7 +46,7 @@ module AliasCallable
     end
 
     def call_forwards_all_arguments?
-      return false if @callable.is_a?(Module) # not instantiable, so nowhere to forward
+      return false if @callable.instance_of?(Module) # not instantiable, so nowhere to forward
       return false unless @callable.instance_methods.include?(:call)
 
       full_argument_forwarding_pattern?(class_callable_parameters)
