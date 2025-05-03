@@ -14,7 +14,7 @@ RSpec.describe "Story12" do
     end
   end
 
-  context "when callable.call delegates9 arguments to instance via (...) pass-through" do
+  context "when callable.call delegates arguments to instance via (...) pass-through" do
     describe "alias of callable" do
       context "when arguments are required but not passed" do
         it "raises ArgumentError" do
