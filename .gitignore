@@ -3,6 +3,4 @@ coverage
 .ruby-gemset
 .ruby-version
 .rspec_status
-Gemfile.lock
-LICENSE
 alias_callable-*.gem
