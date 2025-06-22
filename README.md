@@ -32,13 +32,13 @@ gem 'alias_callable'
 And then execute:
 
 ```bash
-$ bundle install
+bundle install
 ```
 
 Or install it yourself as:
 
 ```bash
-$ gem install alias_callable
+gem install alias_callable
 ```
 
 You can either enable `alias_callable` globally for all classes:
