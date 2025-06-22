@@ -18,7 +18,6 @@ The `alias_callable` gem introduces a powerful pattern for managing dependencies
 - **Hidden Dependencies**: Makes all dependencies visible at the top of each class
 - **Testing Complexity**: Simplifies mocking and stubbing in tests
 - **Verbose Code**: Replaces long namespace paths with short, readable method names
-- **Refactoring Friction**: Centralizes dependency definitions for easier updates
 - **Context Management**: Automatically passes instance variables to service objects
 
 ## Installation
@@ -201,6 +200,8 @@ class OrderController
 end
 ```
 
+**Note:** If a referenced class does not exist, an error will be raised immediately during the loading phase, allowing issues to be detected early.
+
 ## Best Practices
 
 - Order alias methods alphabetically.
@@ -217,6 +218,43 @@ end
 ```
 
 - Prefer using `auto_fill` only for passing auxiliary context (loggers, trackers, credentials, connections).
+
+## Alternatives
+
+### dry-auto_inject
+
+The [dry-auto_inject](https://github.com/dry-rb/dry-auto_inject) gem provides a similar dependency injection pattern but with some key differences:
+
+**Key Differences:**
+
+- **Initialize Signature**: `alias_callable` does not require changes to your `initialize` method signature, while `dry-auto_inject` modifies class constructors
+- **Dependency Type**: `alias_callable` brings hardcoded dependencies (direct class references), not dependency _injection_ like `dry-auto_inject`
+- **Configuration**: 
+  - `dry-auto_inject` requires listing aliases separately from the actual objects/classes (typically in a container file)
+  - `alias_callable` defines aliases inline with direct class references
+
+**Example comparison:**
+
+```ruby
+# dry-auto_inject approach
+class OrderController
+  include Import["services.create_order", "services.find_user"]
+  
+  def initialize(**deps)
+    super
+  end
+end
+
+# alias_callable approach  
+class OrderController
+  alias_callable :create_order, ::Services::CreateOrder
+  alias_callable :find_user, ::Services::FindUser
+  
+  # No initialize changes needed
+end
+```
+
+Choose `dry-auto_inject` if you need true dependency injection with container-managed dependencies. Choose `alias_callable` if you want simpler hardcoded dependencies without constructor modifications.
 
 ## Advanced Features
 
