@@ -48,7 +48,7 @@ AliasCallable.enable_globally
 
 # Now you can use alias_callable in any class without including the module
 class AnyClass
-  alias_callable :my_service, ::MyService
+  alias_callable :do_something, ::DoSomething
 end
 ```
 
@@ -58,7 +58,7 @@ or extend this feature on a per-class basis:
 class AnyClass
   extend ::AliasCallable::ClassMethods # <- this brings the alias_callable method explicitly
 
-  alias_callable :my_service, ::MyService
+  alias_callable :do_something, ::DoSomething
   # ...
 end
 ```
