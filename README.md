@@ -1,6 +1,6 @@
 # alias_callable Ruby gem
 
-**Keywords:** #alias #method #function #callable #ruby #gem #p20240728a #dependency #inclusion #service-objects #testing #mocking #stubbing #architecture #pattern #clean-code #refactoring #decoupling #injection #metaprogramming #delegation
+> **Keywords:** #alias #method #function #callable #ruby #gem #p20240728a #dependency #inclusion #service-objects #testing #mocking #stubbing #architecture #pattern #clean-code #refactoring #decoupling #injection #metaprogramming #delegation
 
 **Transform your service objects and callable classes into clean, testable methods with the Dependency Inclusion Pattern.**
 
