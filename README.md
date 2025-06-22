@@ -205,18 +205,7 @@ end
 ## Best Practices
 
 - Order alias methods alphabetically.
-- Always use full class names prefixed with `::`. This will make it easier to find and replace dependencies when you rename classes and namespaces.
-
-```ruby
-class OrderController
-  # Alphabetic order, full class names:
-  alias_callable :create_order, ::Services::CreateOrder
-  alias_callable :find_user, ::DataLayers::FindUser
-  alias_callable :send_email, ::Services::SendEmail, auto_fill: [:logger]
-  alias_callable :update_inventory, ::Services::UpdateInventory
-end
-```
-
+- Use full class names prefixed with `::`. This will make it easier to find and replace dependencies when you rename classes and namespaces.
 - Prefer using `auto_fill` only for passing auxiliary context (loggers, trackers, credentials, connections).
 
 ## Alternatives
