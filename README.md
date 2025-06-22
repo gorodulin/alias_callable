@@ -53,11 +53,11 @@ class AnyClass
 end
 ```
 
-or include this feature on a per-class basis:
+or extend this feature on a per-class basis:
 
 ```ruby
 class AnyClass
-  include ::AliasCallable::ClassMethods # <- this brings the alias_callable method explicitly
+  extend ::AliasCallable::ClassMethods # <- this brings the alias_callable method explicitly
 
   alias_callable :my_service, ::MyService
   # ...
