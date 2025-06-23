@@ -12,7 +12,7 @@
 
 ```ruby
 class UserController
-  # Like alias_method, but for service objects:
+  # Like alias_method, but for callable service objects:
   alias_callable :fetch_user, ::FetchUserData
   alias_callable :send_notification, ::SendNotification
   
@@ -28,7 +28,7 @@ end
 
 The `alias_callable` gem introduces a powerful dependency aliasing pattern for Ruby applications. Instead of directly calling service objects (classes that encapsulate business logic) throughout your code, you can alias them as methods, creating cleaner, more testable, and more maintainable code.
 
-The API is designed to feel idiomatic and familiar to Ruby developers — just like Ruby's built-in `alias_method` creates method aliases, `alias_callable` creates method aliases for your callable service objects.
+The approach is designed to feel idiomatic and familiar to Ruby developers — just like Ruby's built-in `alias_method` creates method aliases, `alias_callable` creates method aliases for your callable service objects.
 
 ### Key Benefits
 
