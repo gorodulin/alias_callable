@@ -146,11 +146,13 @@ class Orders::ProcessOrder
     order = create_order(items:, customer_id:)
     puts "Order #{order[:id]} created successfully"
   end
+
+  # ...
 end
 
 logger = Logger.new($stdout)
-processor = Orders::ProcessOrder.new(items: ["Book", "Pen"], customer_id: 456, logger:)
-processor.call
+
+Orders::ProcessOrder.call(items: ["Book", "Pen"], customer_id: 456, logger:)
 ```
 
 ### Testing Made Easy
