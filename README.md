@@ -12,7 +12,8 @@
 
 ```ruby
 class UserController
-  alias_callable :fetch_user, ::FetchUserData        # Like alias_method, but for service objects
+  # Like alias_method, but for service objects:
+  alias_callable :fetch_user, ::FetchUserData
   alias_callable :send_notification, ::SendNotification
   
   def show_user(id)
