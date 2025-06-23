@@ -26,7 +26,7 @@ end
 
 ## Overview
 
-The `alias_callable` gem introduces a powerful dependency aliasing pattern for Ruby applications. Instead of directly calling service objects (classes that encapsulate business logic) throughout your code, you can alias them as methods, creating cleaner, more testable, and more maintainable code.
+The `alias_callable` gem introduces a dependency aliasing pattern for Ruby applications. Instead of directly calling service objects (classes that encapsulate business logic) throughout your code, you can alias them as methods, creating cleaner, more testable, and more maintainable code.
 
 The approach is designed to feel idiomatic and familiar to Ruby developers — just like Ruby's built-in `alias_method` creates method aliases, `alias_callable` creates method aliases for your callable service objects.
 
@@ -157,7 +157,7 @@ Orders::ProcessOrder.call(items: ["Book", "Pen"], customer_id: 456, logger:)
 
 ### Testing Made Easy
 
-The gem provides `aliased_callable` method that returns the aliased callable, making testing much more maintainable than stubbing explicit class names.
+The gem provides `aliased_callable` method that returns the aliased callable, making testing more maintainable than stubbing explicit class names.
 
 **Key advantages over direct class stubbing:**
 
