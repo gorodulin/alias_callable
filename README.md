@@ -242,9 +242,9 @@ end
 
 Choose `dry-auto_inject` if you need true dependency _injection_ with container-managed dependencies. Choose `alias_callable` if you want simpler hardcoded dependencies without constructor modifications.
 
-## Error Handling
+## Load-Time Errors for Missing Classes
 
-If a referenced class doesn't exist, you'll get an error at load time:
+If a referenced class doesn't exist, you'll get an error _at load time_:
 
 ```ruby
 class MyClass
@@ -252,8 +252,6 @@ class MyClass
 end
 # => NameError: uninitialized constant NonExistentClass
 ```
-
-This early detection helps catch configuration errors before they become runtime issues.
 
 ## Extra Feature: Backtrace Filtering
 
