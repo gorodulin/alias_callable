@@ -17,7 +17,7 @@ class UserController
   alias_callable :send_notification, ::SendNotification
   
   def show_user(id)
-    user = fetch_user(id)  # Clean method call instead of FetchUserData.call(id)
+    user = fetch_user(id)  # instead of FetchUserData.call(id)
     send_notification("User loaded", user[:name])
     user
   end
