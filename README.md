@@ -117,8 +117,6 @@ class OrderController
 end
 ```
 
-**Note:** If a referenced class does not exist, an error will be raised immediately during the loading phase, allowing issues to be detected early.
-
 ## Advanced Usage
 
 ### Automatic context passing
