@@ -1,24 +1,41 @@
 # alias_callable Ruby gem
 
-> **Keywords:** #alias #method #function #callable #ruby #gem #p20240728a #dependency #inclusion #service-objects #testing #mocking #stubbing #architecture #pattern #clean-code #refactoring #decoupling #injection #metaprogramming #delegation
+> **Keywords:** #alias #callable #ruby #gem #p20240728a #dependency #inclusion #service-object #pattern #metaprogramming #delegation
 
-**Transform your service objects and callable classes into clean, testable methods with the Dependency Inclusion Pattern.**
+**Transform your service objects into clean, testable methods with dependency aliasing.**
 
 [![Gem Version](https://img.shields.io/gem/v/alias_callable.svg)](https://rubygems.org/gems/alias_callable)
 [![Ruby](https://img.shields.io/badge/ruby-3.0%2B-red.svg)](https://www.ruby-lang.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
+## Quick Start
+
+```ruby
+class UserController
+  alias_callable :fetch_user, ::FetchUserData        # Like alias_method, but for service objects
+  alias_callable :send_notification, ::SendNotification
+  
+  def show_user(id)
+    user = fetch_user(id)  # Clean method call instead of FetchUserData.call(id)
+    send_notification("User loaded", user[:name])
+    user
+  end
+end
+```
+
 ## Overview
 
-The `alias_callable` gem introduces a powerful pattern for managing dependencies in Ruby applications. Instead of directly calling service objects throughout your code, you can alias them as methods, creating cleaner, more testable, and more maintainable code.
+The `alias_callable` gem introduces a powerful dependency aliasing pattern for Ruby applications. Instead of directly calling service objects (classes that encapsulate business logic) throughout your code, you can alias them as methods, creating cleaner, more testable, and more maintainable code.
 
-### Problems Solved
+The API is designed to feel idiomatic and familiar to Ruby developers—just like Ruby's built-in `alias_method` creates method aliases, `alias_callable` creates method aliases for your callable service objects.
 
-- **Tight Coupling**: Eliminates direct references to service classes throughout your code
-- **Hidden Dependencies**: Makes all dependencies visible at the top of each class
-- **Testing Complexity**: Simplifies mocking and stubbing in tests
-- **Verbose Code**: Replaces long namespace paths with short, readable method names
-- **Context Management**: Automatically passes instance variables to service objects
+### Key Benefits
+
+- **Loose Coupling**: Uses method aliases instead of direct class references throughout your code
+- **Explicit Dependencies**: Makes all dependencies clearly visible at the top of each class
+- **Simplified Testing**: Provides clean, easy-to-mock method interfaces for your tests
+- **Readable Code**: Replaces long namespace paths with short, expressive method names
+- **Transparent Context Passing**: Seamlessly passes selected instance variables as method arguments
 
 ## Installation
 
@@ -40,19 +57,16 @@ Or install it yourself as:
 gem install alias_callable
 ```
 
+### Setup Options
+
 You can either enable `alias_callable` globally for all classes:
 
 ```ruby
 # In your application initialization
 AliasCallable.enable_globally
-
-# Now you can use alias_callable in any class without including the module
-class AnyClass
-  alias_callable :do_something, ::DoSomething
-end
 ```
 
-or extend this feature on a per-class basis:
+or extend this feature on a per-class/module basis:
 
 ```ruby
 class AnyClass
@@ -63,44 +77,52 @@ class AnyClass
 end
 ```
 
-## Usage
+## Benefits
 
-### Basic Usage
+### Before alias_callable:
 
 ```ruby
-# Define your service objects
-class FetchUserData
-  def self.call(user_id)
-    # ... fetch user data from database
-    { id: user_id, name: "John Doe" }
-  end
-end
-
-class SendNotification
-  def self.call(message, recipient)
-    # ... send notification logic
-    puts "Sending '#{message}' to #{recipient}"
-  end
-end
-
-# Use alias_callable to include them as methods:
-
-class UserController
-  # Dependencies are clearly visible at the top
-  alias_callable :fetch_user, ::FetchUserData
-  alias_callable :send_notification, ::SendNotification
-  
-  def show_user(id)
-    user = fetch_user(id)  # Instead of FetchUserData.call(id)
-    send_notification("User loaded", user[:name])
-    user
+class OrderController
+  def process_order(params)
+    # Dependencies scattered throughout the code
+    user = ::DataLayers::FindUser.call(params[:user_id])
+    order = ::OrderService::CreateOrder.call(user: user, items: params[:items])
+    ::CommService::SendEmail.call(order: order, template: :order_confirmation, logger: logger)
+    ::Warehouse::UpdateInventory.call(items: params[:items], action: :reserve)
+    order
   end
 end
 ```
 
-### Auto-Fill Instance Variables
+### With alias_callable:
 
-You can automatically pass selected instance variables to your service objects. This is useful when you need to handle cross-cutting concerns like logging, database connections, or credentials.
+```ruby
+class OrderController
+  
+  # All dependencies clearly visible at the top
+  alias_callable :create_order, ::OrderService::CreateOrder
+  alias_callable :find_user, ::DataLayers::FindUser
+  alias_callable :send_email, ::CommService::SendEmail, auto_fill: [:logger]
+  alias_callable :update_inventory, ::Warehouse::UpdateInventory
+  
+  def process_order(params)
+    # Clean, readable method calls
+    user = find_user(params[:user_id]) # instead of DataLayers::FindUser.call(...)
+    order = create_order(user: user, items: params[:items])
+    send_email(order: order, template: :order_confirmation)
+    update_inventory(items: params[:items], action: :reserve)
+    order
+  end
+end
+```
+
+**Note:** If a referenced class does not exist, an error will be raised immediately during the loading phase, allowing issues to be detected early.
+
+## Advanced Usage
+
+### Automatic context passing
+
+You can automatically pass selected instance variables to your service objects as _keyword arguments_ by specifying their names. This is especially useful for handling cross-cutting concerns such as logging, sessions, connections, instrumentation, or credentials. Use this feature wisely, prefer explicitness over magic.
 
 ```ruby
 class CreateOrder
@@ -112,7 +134,7 @@ class CreateOrder
 end
 
 class Orders::ProcessOrder
-  alias_callable :create_order, ::CreateOrder, auto_fill: [:logger]
+  alias_callable :create_order, ::CreateOrder, auto_fill: [:logger] # <- NOTE THIS
   
   def initialize(items:, customer_id:, logger:)
     @items = items
@@ -121,29 +143,38 @@ class Orders::ProcessOrder
   end
   
   def call
-    # The logger instance variable is automatically passed
-    order = create_order(items: items, customer_id: customer_id)
+    # The logger instance variable is IMPLICITLY passed to CreateOrder:
+    order = create_order(items:, customer_id:)
     puts "Order #{order[:id]} created successfully"
   end
 end
 
 logger = Logger.new($stdout)
-processor = Orders::ProcessOrder.new(items: ["Book", "Pen"], customer_id: 456, logger: logger)
+processor = Orders::ProcessOrder.new(items: ["Book", "Pen"], customer_id: 456, logger:)
 processor.call
 ```
 
 ### Testing Made Easy
 
-The pattern dramatically simplifies testing by providing clean mocking points:
+The gem provides `aliased_callable` method that returns the aliased callable, making testing much more maintainable than stubbing explicit class names.
+
+**Key advantages over direct class stubbing:**
+
+- **Refactoring resilience**: When you rename or move service classes, your tests don't need updates
+- **Automatic test maintenance**: If you remove an alias from the class, related test stubs will fail, indicating redundant mocking
+- **Clean mocking interface**: Mock through the same alias used in your code
 
 ```ruby
-# In your test file
+# Instead of stubbing the class directly:
+# allow(::FetchUser).to receive(:call)  # Breaks when class is renamed/moved
+
+# Stub through the alias:
 RSpec.describe UserController do
   let(:controller) { UserController.new }
   
   describe '#show_user' do
     it 'fetches and displays user data' do
-      # Easy to mock the aliased callable
+      # Mock the aliased callable - stays in sync with your code
       allow(described_class.aliased_callable(:fetch_user))
         .to receive(:call)
         .with(123)
@@ -161,46 +192,13 @@ RSpec.describe UserController do
 end
 ```
 
-## Benefits
-
-### Before alias_callable:
+Add this shared helper to your unit specs to get a shortcut:
 
 ```ruby
-class OrderController
-  def create_order(params)
-    # Dependencies scattered throughout the code
-    user = ::DataLayers::FindUser.call(params[:user_id])
-    order = ::Services::CreateOrder.call(user: user, items: params[:items])
-    ::Services::SendEmail.call(order: order, template: :order_confirmation, logger: logger)
-    ::Services::UpdateInventory.call(items: params[:items], action: :reserve)
-    order
-  end
+def callable(name)
+  described_class.aliased_callable(name)
 end
 ```
-
-### With alias_callable:
-
-```ruby
-class OrderController
-  
-  # All dependencies clearly visible at the top
-  alias_callable :create_order, ::Services::CreateOrder
-  alias_callable :find_user, ::DataLayers::FindUser
-  alias_callable :send_email, ::Services::SendEmail, auto_fill: [:logger]
-  alias_callable :update_inventory, ::Services::UpdateInventory
-  
-  def create_order(params)
-    # Clean, readable method calls
-    user = find_user(params[:user_id])
-    order = create_order(user: user, items: params[:items])
-    send_email(order: order, template: :order_confirmation)
-    update_inventory(items: params[:items], action: :reserve)
-    order
-  end
-end
-```
-
-**Note:** If a referenced class does not exist, an error will be raised immediately during the loading phase, allowing issues to be detected early.
 
 ## Best Practices
 
@@ -236,18 +234,29 @@ end
 
 # alias_callable approach  
 class OrderController
-  alias_callable :create_order, ::Services::CreateOrder
+  alias_callable :create_order, ::OrderService::CreateOrder
   alias_callable :find_user, ::Services::FindUser
   
   # No initialize changes needed
 end
 ```
 
-Choose `dry-auto_inject` if you need true dependency injection with container-managed dependencies. Choose `alias_callable` if you want simpler hardcoded dependencies without constructor modifications.
+Choose `dry-auto_inject` if you need true dependency _injection_ with container-managed dependencies. Choose `alias_callable` if you want simpler hardcoded dependencies without constructor modifications.
 
-## Advanced Features
+## Error Handling
 
-### Backtrace Filtering
+If a referenced class doesn't exist, you'll get an error at load time:
+
+```ruby
+class MyClass
+  alias_callable :missing_service, ::NonExistentClass
+end
+# => NameError: uninitialized constant NonExistentClass
+```
+
+This early detection helps catch configuration errors before they become runtime issues.
+
+## Extra Feature: Backtrace Filtering
 
 Clean up your backtraces by filtering out alias_callable internals:
 
@@ -255,11 +264,7 @@ Clean up your backtraces by filtering out alias_callable internals:
 AliasCallable.enable_backtrace_filtering
 ```
 
-Filtering backtraces is generally not recommended, but it can be helpful in some cases.
-
-### Class and Instance Methods
-
-`alias_callable` works with both instance and class methods, automatically detecting the appropriate context.
+Filtering backtraces is generally not recommended, but it can be helpful if you know what you're doing.
 
 ## Requirements
 
